@@ -15,7 +15,7 @@ const error={
     email:false,
     password:false
 }
-const errorMessage={
+export const errorMessage={
     ad:"en az 3 karakter olmalı",
     soyad:"en az 3 karakter olmalı",
     email:"geçerli bir email giriniz",
@@ -129,8 +129,9 @@ export default function Login(){
                                 onChange={handleChange}
                                 value={formData.ad}
                                 invalid={errors.ad}
+                                data-cy="ad-input"
                                 ></Input>
-                                {errors.ad && <FormFeedback>{errorMessage.ad}</FormFeedback>}
+                                {errors.ad && <FormFeedback data-cy="error-messages">{errorMessage.ad}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
@@ -142,8 +143,9 @@ export default function Login(){
                                 onChange={handleChange}
                                 value={formData.soyad}
                                 invalid={errors.soyad}
+                                data-cy="soyad-input"
                                 ></Input>
-                                {errors.soyad && <FormFeedback>{errorMessage.soyad}</FormFeedback>}
+                                {errors.soyad && <FormFeedback data-cy="error-messages">{errorMessage.soyad}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
@@ -155,8 +157,9 @@ export default function Login(){
                                 onChange={handleChange}
                                 value={formData.email}
                                 invalid={errors.email}
+                                data-cy="email-input"
                                 ></Input>
-                                {errors.email && <FormFeedback>{errorMessage.email}</FormFeedback>}
+                                {errors.email && <FormFeedback data-cy="error-messages">{errorMessage.email}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
@@ -168,11 +171,12 @@ export default function Login(){
                                 onChange={handleChange}
                                 value={formData.password}
                                 invalid={errors.password}
+                                data-cy="password-input"
                                 ></Input>
-                                {errors.password && <FormFeedback>{errorMessage.password}</FormFeedback>}
+                                {errors.password && <FormFeedback data-cy="error-messages">{errorMessage.password}</FormFeedback>}
                     </FormGroup>
 
-                    <Button onChange={handleSubmit} disabled={!isValid}>Kayıt Ol</Button>
+                    <Button onChange={handleSubmit} disabled={!isValid} data-cy="submit-button">Kayıt Ol</Button>
                 </Form>
             </CardBody>
         </Card>
