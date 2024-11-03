@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
-import { Button, Form, FormGroup, Label, Input, CardBody, Card, CardHeader } from "reactstrap";
+import { useEffect, useState } from "react";
+import { Button, Form, FormGroup, Label, Input, CardBody, Card, CardHeader, FormFeedback } from "reactstrap";
 
 
 const initial={
@@ -9,23 +9,100 @@ const initial={
     email:"",
     password:""
 }
+const error={
+    ad:false,
+    soyad:false,
+    email:false,
+    password:false
+}
+const errorMessage={
+    ad:"en az 3 karakter olmalı",
+    soyad:"en az 3 karakter olmalı",
+    email:"geçerli bir email giriniz",
+    password:"en az 8 karakter, büyük-küçük harf, sembol ve sayı içermeli"
+}
+
 
 
 export default function Login(){
-    const [formData, setFormData] =useState({initial})
+    const [formData, setFormData] =useState(initial)
+    const [errors,setErrors] =useState(error);
+    const [isValid,setIsValid] =useState(false)
+    const [id,setId] =useState("")
 
 
+    const validateEmail = (email) => {
+        return String(formData.email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+        };
 
+    const paswordRegex=/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d|.*\W).{8,}$/;
 
     const handleChange = (event)=>{
         const{name, value}=event.target
         setFormData({...formData,[name]:value})
 
+        if(name ==="ad"){
+            if(value.trim().length>=3){
+                setErrors({...errors,[name]:false})
+            } else {
+                setErrors({...errors,[name]:true})
+            }
+        }
+
+        if(name ==="soyad"){
+            if(value.trim().length>=3){
+                setErrors({...errors,[name]:false})
+            } else {
+                setErrors({...errors,[name]:true})
+            }
+        }
+
+        if(name ==="email"){
+            if(validateEmail(value)){
+                setErrors({...errors,[name]:false})
+            } else {
+                setErrors({...errors,[name]:true})
+            }
+        }
+        if(name ==="password"){
+            if(paswordRegex.test(value)) {
+                setErrors({...errors,[name]:false})
+            } else {
+                setErrors({...errors,[name]:true})
+            }
+        }
+
     }
+
+    useEffect(()=>{
+        if(formData.ad.trim().length>=3 && formData.soyad.trim().length>=3 && validateEmail(formData.email) && paswordRegex.test(formData.password)){
+            setIsValid(true)
+        } else {
+            setIsValid(false)
+        }
+
+    },[formData])
 
 
     const handleSubmit = (event)=>{
         event.preventDefault()
+        if(!isValid) return
+
+        axios
+        .post("")
+        .then((response)=>{
+            setFormData(initial)
+            setId(response.data.id)
+            
+        })
+        .catch((error)=>{
+            console.log(error)
+
+        })
 
     }
 
@@ -46,44 +123,56 @@ export default function Login(){
                     <FormGroup>
                         <Label for="ad">Name</Label>
                         <Input id="ad" 
-                                name="Ad" 
-                                placeholder="minimum 3 karakter" 
+                                name="ad" 
+                                placeholder="Adınızı giriniz" 
                                 type="text"
                                 onChange={handleChange}
-                                value={formData.ad}>Ad</Input>
+                                value={formData.ad}
+                                invalid={errors.ad}
+                                ></Input>
+                                {errors.ad && <FormFeedback>{errorMessage.ad}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="soyad">Surname</Label>
                         <Input id="soyad" 
-                                name="Soyad" 
-                                placeholder="minimum 3 karakter" 
+                                name="soyad" 
+                                placeholder="Soyadınızı giriniz" 
                                 type="text"
                                 onChange={handleChange}
-                                value={formData.soyad}></Input>
+                                value={formData.soyad}
+                                invalid={errors.soyad}
+                                ></Input>
+                                {errors.soyad && <FormFeedback>{errorMessage.soyad}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="email">email</Label>
                         <Input id="email" 
                                 name="email" 
-                                placeholder="geçerli bir email" 
+                                placeholder="Geçerli bir email giriniz" 
                                 type="email" 
                                 onChange={handleChange}
-                                value={formData.email}>email</Input>
+                                value={formData.email}
+                                invalid={errors.email}
+                                ></Input>
+                                {errors.email && <FormFeedback>{errorMessage.email}</FormFeedback>}
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="password">password</Label>
                         <Input id="password" 
                                 name="password" 
-                                placeholder="güçlü bir parola" 
+                                placeholder="Güçlü bir parola oluşturunuz" 
                                 type="password"
                                 onChange={handleChange}
-                                value={formData.password}>email</Input>
+                                value={formData.password}
+                                invalid={errors.password}
+                                ></Input>
+                                {errors.password && <FormFeedback>{errorMessage.password}</FormFeedback>}
                     </FormGroup>
 
-                    <Button onChange={handleChange} >Kayıt Ol</Button>
+                    <Button onChange={handleSubmit} disabled={!isValid}>Kayıt Ol</Button>
                 </Form>
             </CardBody>
         </Card>
